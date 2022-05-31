@@ -1,34 +1,8 @@
-import axios from 'axios';
-import { ChangeEvent, useContext, useReducer, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { UserContext } from '../../providers/UserProvider';
+import { useLogin } from '../../hooks/useLogin';
 
 export const Home = () => {
-  const { userState, userDispatch } = useContext(UserContext);
-  const initialValues = { userCode: '', password: '' };
-  const [loginValues, setLoginValues] = useState(initialValues);
-
-  const handleChangeLoginForm = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    if (name === 'userCode') {
-      setLoginValues({ ...loginValues, userCode: value });
-    } else {
-      setLoginValues({ ...loginValues, password: value });
-    }
-  };
-
-  const loginHandler = () => {
-    const data = { userCode: loginValues.userCode, password: loginValues.password };
-    axios
-      .post('http://localhost:3001/api/v1/auth/login', data)
-      .then((result) => {
-        userDispatch({ type: 'LOGIN', token: result.data.token, payLoad: result.data.result });
-      })
-      .catch((error) => {
-        console.log('エラー');
-        console.log(error);
-      });
-  };
+  const { userState, handleChangeLoginForm, loginHandler } = useLogin();
 
   return (
     <>
@@ -58,6 +32,8 @@ export const Home = () => {
           <br />
           <button onClick={loginHandler}>ログイン</button>
         </div>
+        <div>{userState.displayName}</div>
+        <div>{userState.mailAddress}</div>
         <Link to="/search">検索</Link>
 
         <Link to="/customer">ユーザー用トップページへ</Link>
